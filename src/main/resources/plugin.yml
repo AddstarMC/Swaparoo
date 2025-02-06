@@ -1,0 +1,25 @@
+name: Swaparoo
+version: '1.0-SNAPSHOT'
+main: au.com.addstar.swaparoo.SwaparooPlugin
+api-version: '1.19'
+description: Tool for swapping/using keys and gems
+softdepend: [Vault, PlaceholderAPI]
+commands:
+  swaparoo:
+    description: "Base command for Swaparoo"
+    usage: "/swaparoo"
+    permission: swaparoo.admin
+  stargems:
+    description: "Check your StarGems/StarDust balance"
+    usage: "/stargems"
+    permission: swaparoo.balance
+    aliases: [stardust, gems, dust]
+permissions:
+  swaparoo.admin:
+    description: "Allows access to Swaparoo commands"
+    default: op
+    children:
+      swaparoo.command.reload: true
+      swaparoo.command.debug: true
+      swaparoo.command.keys: true
+      swaparoo.command.stargems: true

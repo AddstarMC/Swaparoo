@@ -1,0 +1,82 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+group = 'au.com.addstar'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        name = "papermc-repo"
+        url = "https://repo.papermc.io/repository/maven-public/"
+    }
+    maven {
+        name = "sonatype"
+        url = "https://oss.sonatype.org/content/groups/public/"
+    }
+    maven {
+        name = "placeholderapi"
+        url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/'
+    }
+}
+
+dependencies {
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly('me.clip:placeholderapi:2.11.6')
+    implementation 'com.zaxxer:HikariCP:6.2.1'
+    implementation 'net.kyori:adventure-api:4.17.0'
+}
+
+def targetJavaVersion = 17
+java {
+    def javaVersion = JavaVersion.toVersion(targetJavaVersion)
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
+    if (JavaVersion.current() < javaVersion) {
+        toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
+    }
+}
+
+shadowJar {
+    // Relocate HikariCP package to avoid conflicts
+    relocate 'com.zaxxer.hikari', 'au.com.addstar.swaparoo.shaded.hikari'
+
+    // Optional: Minimize the JAR by removing unused classes
+    minimize()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+
+    if (targetJavaVersion >= 10 || JavaVersion.current().isJava10Compatible()) {
+        options.release.set(targetJavaVersion)
+    }
+}
+
+processResources {
+    def props = [version: version]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+tasks {
+    // Disable the regular JAR task
+    jar {
+        enabled = false
+    }
+
+    // Configure shadowJar task
+    shadowJar {
+        archiveClassifier.set('') // Removes '-all' classifier from the JAR name
+    }
+
+    // Ensure the build task depends on shadowJar
+    build {
+        dependsOn shadowJar
+    }
+}
