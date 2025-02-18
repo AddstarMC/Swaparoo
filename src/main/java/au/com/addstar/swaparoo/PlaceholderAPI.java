@@ -50,6 +50,18 @@ public class PlaceholderAPI extends PlaceholderExpansion {
             //SwaparooPlugin.debugMsg("PlaceholderAPI: onRequest for player " + player.getName() + " and " + params.toLowerCase() + " = " + count);
             return count != null ? String.valueOf(count) : "0";
         }
+        else if (params.equalsIgnoreCase("server")) {
+            return plugin.getServerName();
+        }
+        else if (params.startsWith("gemcost_") && params.length() > 8) {
+            String val = params.substring(8);
+            try {
+                int cost = Integer.parseInt(val);
+                return "&e&lCost: &b" + cost + " &eStar&6Gems";
+            } catch (Exception e) {
+                return "~ERROR_INVALID_COST~";
+            }
+        }
 
         return "";
     }

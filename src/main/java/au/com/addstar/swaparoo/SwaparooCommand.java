@@ -51,6 +51,50 @@ public class SwaparooCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 return true;
+            case "buy":
+                if (!sender.hasPermission("swaparoo.command.buy")) {
+                    plugin.sendMsg(sender,"<red>You do not have permission to use this command.");
+                    return true;
+                }
+                if (args.length < 4) {
+                    plugin.sendMsg(sender,"<red>Usage: /swaparoo buy <player> <gems> <packagename> <params>");
+                    return true;
+                }
+
+                // Get the player
+                Player buyer = Bukkit.getPlayer(args[1]);
+                if (buyer == null) {
+                    plugin.sendMsg(sender,"<red>Player " + args[1] + " is not online.");
+                    return true;
+                }
+
+                // Get the amount of gems this command will cost
+                int cost = Integer.parseInt(args[2]);
+                if (cost < 0) {
+                    plugin.sendMsg(sender,"<red>Amount must be a positive number.");
+                    return true;
+                }
+
+                // Name of the package being purchased
+                String packname = args[3];
+
+                // Get the package and params
+                StringBuilder params = new StringBuilder();
+                if (args.length > 4) {
+                    for (int i = 4; i < args.length; i++) {
+                        params.append(args[i]).append(" ");
+                    }
+                }
+
+                // Check if the player has enough gems
+                if (plugin.getDM().getStarCount(buyer.getUniqueId(), "stargems", false) < cost) {
+                    SwaparooPlugin.errMsg("<red>Player " + buyer.getName() + " does not have " + cost + " stargems to run: " + packname);
+                    plugin.sendMsg(buyer,"<red>You do not have enough <yellow>Star<gold>Gems</gold></yellow> for this action");
+                    return true;
+                }
+
+                plugin.getBM().buyPackage(buyer, cost, packname, params.toString());
+                return true;
             case "stargems":
             case "stardust":
             case "gems":

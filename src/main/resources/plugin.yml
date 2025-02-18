@@ -12,8 +12,12 @@ commands:
   stargems:
     description: "Check your StarGems/StarDust balance"
     usage: "/stargems"
-    permission: swaparoo.balance
+    permission: swaparoo.command.balance
     aliases: [stardust, gems, dust]
+  buyconfirm:
+    description: "Confirm a purchase with StarGems"
+    usage: "/buyconfirm"
+    permission: swaparoo.command.confirm
 permissions:
   swaparoo.admin:
     description: "Allows access to Swaparoo commands"

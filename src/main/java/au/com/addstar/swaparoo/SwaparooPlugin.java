@@ -2,12 +2,12 @@ package au.com.addstar.swaparoo;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -16,11 +16,14 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
     private static Config config;
     private static DataManager dataManager;
     private static StarManager starManager;
+    private static BuyManager buyManager;
     private final MiniMessage miniMessage;   // MiniMessage Parser
+    private final String serverName;
 
     public SwaparooPlugin() {
         instance = this;
         this.miniMessage = MiniMessage.miniMessage();
+        this.serverName = findServerName();
     }
 
     @Override
@@ -59,6 +62,7 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
         }
 
         starManager = new StarManager(this);
+        buyManager = new BuyManager(this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
         SwaparooCommand swaparooCommand = new SwaparooCommand(this);
         getCommand("swaparoo").setExecutor(swaparooCommand);
@@ -66,6 +70,8 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
 
         getCommand("stargems").setExecutor(new StarCommand(this));
         getCommand("stargems").setAliases(Arrays.asList("gems", "dust", "stardust"));
+
+        getCommand("buyconfirm").setExecutor(new ConfirmCommand(this));
     }
 
     @Override
@@ -85,6 +91,10 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
 
     public StarManager getSM() {
         return starManager;
+    }
+
+    public BuyManager getBM() {
+        return buyManager;
     }
 
     public static Config getConfigs() {
@@ -114,5 +124,31 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
 
     public void sendMsg(CommandSender sender, String message) {
         sender.sendMessage(miniMessage.deserialize(message));
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public static String findServerName() {
+        // Define expected base directory and get the current working directory
+        String basePath = "/data/srv-";
+        String currentDir = new File("").getAbsolutePath();
+
+        // Check if the current directory contains the expected base path
+        if (currentDir.contains(basePath)) {
+            // Find the index where the base path ends
+            int startIndex = currentDir.indexOf(basePath) + basePath.length();
+
+            // Extract the substring starting from the end of the base path
+            String remainingPath = currentDir.substring(startIndex);
+
+            // Split by the file separator or other expected delimiters if needed
+            return remainingPath.split("/")[0]; // Gets the part before the next "/"
+        } else {
+            // Handle cases where the path does not match the expected format
+            logMsg("Error: Current directory does not match expected path format.");
+            return null;
+        }
     }
 }
