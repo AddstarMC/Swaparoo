@@ -111,7 +111,8 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
 
     public static void debugMsg(String msg) {
         if (config.getDebug())
-            instance.getLogger().info("[Swaproo] DEBUG: " + msg);
+            // Correct plugin name in debug messages
+            instance.getLogger().info("[Swaparoo] DEBUG: " + msg);
     }
 
     public static boolean isDebug() {
