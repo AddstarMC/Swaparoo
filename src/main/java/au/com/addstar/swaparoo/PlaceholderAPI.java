@@ -13,7 +13,11 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getIdentifier() {
-        return "Swaparoo";
+        // Placeholder identifiers in PlaceholderAPI are case-sensitive and
+        // conventionally lowercase. The placeholders documented in the README
+        // use the lowercase prefix "swaparoo", so return that value to ensure
+        // the expansion is correctly recognised by PlaceholderAPI.
+        return "swaparoo";
     }
 
     @Override
