@@ -3,6 +3,8 @@ package au.com.addstar.swaparoo;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -17,6 +19,9 @@ public class DataManager {
     private final String[] treasureKeys = {"stone", "iron", "gold", "diamond", "emerald"};
     private final String[] starTypes = {"stargems", "stardust"};
 
+    public record Transaction(String action, int stargems, int stardust, String packageId,
+                              String packageName, Timestamp time) {}
+
     public void recordTransaction(UUID playerid, String action, int gems, int dust, String packageId, String packageName) {
         String query = "INSERT INTO transactions (player_uuid, action, stargems, stardust, package_id, package_name) VALUES (?,?,?,?,?,?)";
         try {
@@ -25,6 +30,28 @@ public class DataManager {
             SwaparooPlugin.errMsg("StarGemsDB: Failed to record transaction for player " + playerid + ": " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public java.util.List<Transaction> getTransactions(UUID playerid, int offset, int limit) {
+        java.util.List<Transaction> list = new ArrayList<>();
+        String query = "SELECT action, stargems, stardust, package_id, package_name, transaction_time " +
+                "FROM transactions WHERE player_uuid=? ORDER BY transaction_time DESC LIMIT ? OFFSET ?";
+        try (Connection conn = starGemsDB.getConnection();
+             ResultSet result = starGemsDB.executeQuery(conn, query, playerid.toString(), limit, offset)) {
+            while (result.next()) {
+                list.add(new Transaction(
+                        result.getString("action"),
+                        result.getInt("stargems"),
+                        result.getInt("stardust"),
+                        result.getString("package_id"),
+                        result.getString("package_name"),
+                        result.getTimestamp("transaction_time")));
+            }
+        } catch (SQLException e) {
+            SwaparooPlugin.errMsg("StarGemsDB: Failed to fetch transactions for player " + playerid + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return list;
     }
 
     public DataManager(SwaparooPlugin plugin) {
