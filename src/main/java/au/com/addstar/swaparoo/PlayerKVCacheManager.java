@@ -41,8 +41,12 @@ public class PlayerKVCacheManager {
     public Map<String, Integer> getPlayerCounts(UUID playerId) {
         // Check the cache
         CacheEntry entry = cache.get(playerId);
-        if (entry != null && !entry.isExpired()) {
-            return entry.getMapCounts();
+        if (entry != null) {
+            if (!entry.isExpired()) {
+                return entry.getMapCounts();
+            }
+            // Remove expired entries to prevent memory leaks
+            cache.remove(playerId);
         }
         return null;
     }
