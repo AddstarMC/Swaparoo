@@ -17,24 +17,10 @@ public class DataManager {
     private final String[] treasureKeys = {"stone", "iron", "gold", "diamond", "emerald"};
     private final String[] starTypes = {"stargems", "stardust"};
 
-    private void createTransactionsTable() throws SQLException {
-        String sql = "CREATE TABLE IF NOT EXISTS transactions (" +
-                "ID INT AUTO_INCREMENT PRIMARY KEY," +
-                "PLAYER_UUID VARCHAR(36)," +
-                "TYPE VARCHAR(10)," +
-                "STARGEMS INT DEFAULT 0," +
-                "STARDUST INT DEFAULT 0," +
-                "PACKAGE_ID VARCHAR(64)," +
-                "PACKAGE_NAME VARCHAR(64)," +
-                "TRANSACTION_TIME TIMESTAMP DEFAULT CURRENT_TIMESTAMP" +
-                ")";
-        starGemsDB.executeUpdate(sql);
-    }
-
-    public void recordTransaction(UUID playerid, String type, int gems, int dust, String packageId, String packageName) {
-        String query = "INSERT INTO transactions (PLAYER_UUID, TYPE, STARGEMS, STARDUST, PACKAGE_ID, PACKAGE_NAME) VALUES (?,?,?,?,?,?)";
+    public void recordTransaction(UUID playerid, String action, int gems, int dust, String packageId, String packageName) {
+        String query = "INSERT INTO transactions (player_uuid, action, stargems, stardust, package_id, package_name) VALUES (?,?,?,?,?,?)";
         try {
-            starGemsDB.executeUpdate(query, playerid.toString(), type, gems, dust, packageId, packageName);
+            starGemsDB.executeUpdate(query, playerid.toString(), action, gems, dust, packageId, packageName);
         } catch (SQLException e) {
             SwaparooPlugin.errMsg("StarGemsDB: Failed to record transaction for player " + playerid + ": " + e.getMessage());
             e.printStackTrace();
@@ -51,7 +37,6 @@ public class DataManager {
         // Initialise the database connection pools
         starGemsDB.initializePool();
         treasuresDB.initializePool();
-        createTransactionsTable();
     }
 
     public void close() {
