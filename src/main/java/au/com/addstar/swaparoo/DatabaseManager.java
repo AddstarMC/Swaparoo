@@ -104,6 +104,8 @@ public abstract class DatabaseManager {
     public ResultSet executeQuery(Connection conn, String query, Object... params) throws SQLException {
         //SwaparooPlugin.debugMsg(className + ": executeQuery: " + query);
         PreparedStatement statement = prepareStatement(conn, query, params);
+        // Automatically close the statement when the result set is closed to avoid leaks
+        statement.closeOnCompletion();
         return statement.executeQuery();
     }
 
