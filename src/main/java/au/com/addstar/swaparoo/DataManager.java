@@ -17,6 +17,16 @@ public class DataManager {
     private final String[] treasureKeys = {"stone", "iron", "gold", "diamond", "emerald"};
     private final String[] starTypes = {"stargems", "stardust"};
 
+    public void recordTransaction(UUID playerid, String action, int gems, int dust, String packageId, String packageName) {
+        String query = "INSERT INTO transactions (player_uuid, action, stargems, stardust, package_id, package_name) VALUES (?,?,?,?,?,?)";
+        try {
+            starGemsDB.executeUpdate(query, playerid.toString(), action, gems, dust, packageId, packageName);
+        } catch (SQLException e) {
+            SwaparooPlugin.errMsg("StarGemsDB: Failed to record transaction for player " + playerid + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public DataManager(SwaparooPlugin plugin) {
         this.plugin = plugin;
         starGemsDB = new StarGemsDB(plugin);

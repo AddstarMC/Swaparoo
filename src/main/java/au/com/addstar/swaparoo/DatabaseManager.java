@@ -20,7 +20,6 @@ public abstract class DatabaseManager {
     public DatabaseManager(SwaparooPlugin plugin) {
         this.plugin = plugin;
         this.className = getClass().getSimpleName();
-        configure();
     }
 
     /**
@@ -62,6 +61,13 @@ public abstract class DatabaseManager {
         }
 
         this.dataSource = new HikariDataSource(config);
+
+        // Create the tables if necessary
+        try {
+            createTables();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -136,9 +142,10 @@ public abstract class DatabaseManager {
     }
 
     /**
-     * Abstract method to be implemented by subclasses for specific initialization logic.
+     * Abstract method called after the connection pool is initialized.
+     * This method should be implemented in subclasses to create necessary tables.
      */
-    public void configure() {
+    public void createTables() throws SQLException {
         // Implement in subclass
     }
 }

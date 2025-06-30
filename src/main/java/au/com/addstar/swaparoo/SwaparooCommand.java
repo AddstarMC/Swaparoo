@@ -124,20 +124,38 @@ public class SwaparooCommand implements CommandExecutor, TabCompleter {
                     switch (action) {
                         case "add" -> {
                             // Add stardust to the player
-                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () ->
-                                plugin.getSM().giveStars(player.getUniqueId(), startype, amount, true));
+                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                                plugin.getSM().giveStars(player.getUniqueId(), startype, amount, true);
+                                if (startype.equals("stargems")) {
+                                    plugin.getDM().recordTransaction(player.getUniqueId(), "add", amount, 0, null, null);
+                                } else {
+                                    plugin.getDM().recordTransaction(player.getUniqueId(), "add", 0, amount, null, null);
+                                }
+                            });
                             return true;
                         }
                         case "remove" -> {
                             // Remove stardust from the player
-                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () ->
-                                    plugin.getSM().takeStars(player.getUniqueId(), startype, amount, true));
+                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                                plugin.getSM().takeStars(player.getUniqueId(), startype, amount, true);
+                                if (startype.equals("stargems")) {
+                                    plugin.getDM().recordTransaction(player.getUniqueId(), "remove", amount, 0, null, null);
+                                } else {
+                                    plugin.getDM().recordTransaction(player.getUniqueId(), "remove", 0, amount, null, null);
+                                }
+                            });
                             return true;
                         }
                         case "set" -> {
                             // Set the stardust for the player
-                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () ->
-                                    plugin.getSM().setStars(player.getUniqueId(), startype, amount, true));
+                            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+                                plugin.getSM().setStars(player.getUniqueId(), startype, amount, true);
+                                if (startype.equals("stargems")) {
+                                    plugin.getDM().recordTransaction(player.getUniqueId(), "set", amount, 0, null, null);
+                                } else {
+                                    plugin.getDM().recordTransaction(player.getUniqueId(), "set", 0, amount, null, null);
+                                }
+                            });
                             return true;
                         }
                     };

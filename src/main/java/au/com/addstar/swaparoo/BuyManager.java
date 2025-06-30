@@ -13,14 +13,16 @@ public class BuyManager {
 
     private static class StoredPurchase {
         private final int cost;
-        private final String packagename;
+        private final String packageId;
+        private final String packageName;
         private final String params;
         private final int expiry;
-        private String playername;
+        private final String playername;
 
-        public StoredPurchase(String playername, int cost, String packagename, String params) {
+        public StoredPurchase(String playername, int cost, String packageId, String packageName, String params) {
             this.cost = cost;
-            this.packagename = packagename;
+            this.packageId = packageId;
+            this.packageName = packageName;
             this.params = params;
             this.playername = playername;
             this.expiry = (int) (System.currentTimeMillis() / 1000) + 30;
@@ -30,8 +32,12 @@ public class BuyManager {
             return cost;
         }
 
-        public String getPackagename() {
-            return packagename;
+        public String getPackageId() {
+            return packageId;
+        }
+
+        public String getPackageName() {
+            return packageName;
         }
 
         public String getParams() {
@@ -51,7 +57,7 @@ public class BuyManager {
     }
 
     public void buyPackage(Player buyer, int cost, String packageid, String packagename, String params) {
-        StoredPurchase storedCommand = new StoredPurchase(buyer.getName(), cost, packageid, params);
+        StoredPurchase storedCommand = new StoredPurchase(buyer.getName(), cost, packageid, packagename, params);
         pendingPurchases.put(buyer.getUniqueId(), storedCommand);
 
         SwaparooPlugin.debugMsg("=== Command to have been purchased ===");
@@ -90,12 +96,14 @@ public class BuyManager {
         }
 
         // Take the gems from the player and run the command
-        String pack = storedCommand.getPackagename();
+        String packId = storedCommand.getPackageId();
+        String packName = storedCommand.getPackageName();
         String params = storedCommand.getParams();
         if (plugin.getSM().takeStars(buyer.getUniqueId(), "stargems", cost, false)) {
-            String cmd = "runalias srv_starshop " + buyer.getName() + " " + pack + " " + params;
+            String cmd = "runalias srv_starshop " + buyer.getName() + " " + packId + " " + params;
             SwaparooPlugin.debugMsg("Executing command: " + cmd);
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd);
+            plugin.getDM().recordTransaction(buyer.getUniqueId(), "buy", cost, 0, packId, packName);
             plugin.sendMsg(buyer, "<dark_grey>[<green><bold>√</bold><dark_grey>]</dark_grey> You have successfully purchased the package.");
         }
     }
