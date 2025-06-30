@@ -68,13 +68,13 @@ public class BuyManager {
         SwaparooPlugin.debugMsg("Package Params: " + params);
 
         String link = "<hover:show_text:\"<green>√</green> <yellow>Click to purchase</yellow>\"><click:run_command:/buyconfirm><bold><light_purple>►►<gold><underlined>CLICK HERE</underlined></gold>◄◄</light_purple></bold></click></hover>";
-        plugin.sendMsg(buyer, "<gradient:#ffbb00:#ff0f1f>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
+        plugin.sendMsg(buyer, "<gradient:#3cff00:#ff0f1f>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
         plugin.sendMsg(buyer, "<yellow>  You are about to purchase a package:</yellow>");
         plugin.sendMsg(buyer, "<green>     Package ID: <aqua>" + packageid + "</aqua></green>");
         plugin.sendMsg(buyer, "<green>     Package Name: <aqua>" + packagename + "</aqua></green>");
         plugin.sendMsg(buyer, "<green>     Purchase Cost: <aqua>" + cost + " <yellow>Star<gold>Gems</aqua></green><newline>");
         plugin.sendMsg(buyer, "<green>   " + link + " <yellow>to confirm your purchase.</green>");
-        plugin.sendMsg(buyer, "<gradient:#ffbb00:#ff0f1f>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
+        plugin.sendMsg(buyer, "<gradient:#3cff00:#ff0f1f>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
         return;
     }
 
