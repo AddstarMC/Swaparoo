@@ -44,10 +44,11 @@ public class StarCommand implements CommandExecutor {
                         plugin.sendMsg(player, "<yellow>No transactions found.</yellow>");
                         return;
                     }
-                    java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm");
+                    plugin.sendMsg(player, "<yellow>Displaying your StarGems usage history:</yellow>");
+                    java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd/MMM/yyyy HH:mm");
                     for (var t : list) {
                         String date = t.time().toLocalDateTime().format(fmt);
-                        StringBuilder msg = new StringBuilder("<gray>- " + date + " - </gray>");
+                        StringBuilder msg = new StringBuilder("<light_purple>► </light_purple><gray>" + date + ":</gray> ");
                         String action = t.action();
                         if (action.equalsIgnoreCase("add")) {
                             if (t.stargems() > 0) msg.append("<green>Received <aqua>").append(t.stargems())
@@ -74,11 +75,9 @@ public class StarCommand implements CommandExecutor {
                                     .append("</aqua> <yellow>Star<white>Dust</white></yellow>");
                             }
                         } else if (action.equalsIgnoreCase("buy")) {
-                            msg.append("<red>Spent <aqua>").append(t.stargems())
-                                    .append("</aqua> <yellow>Star<gold>Gems</gold></yellow>");
+                            msg.append("<red>Spent <aqua>").append(t.stargems()).append("</aqua>");
                             if (t.packageName() != null) {
-                                msg.append(": <white>").append(t.packageName())
-                                        .append("</white> (<gray>").append(t.packageId()).append("</gray>)");
+                                msg.append(": <white>").append(t.packageName()).append("</white>");
                             }
                         }
                         plugin.sendMsg(player, msg.toString());
