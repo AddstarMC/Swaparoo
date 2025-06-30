@@ -1,6 +1,8 @@
 package au.com.addstar.swaparoo;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -17,12 +19,11 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
     private static DataManager dataManager;
     private static StarManager starManager;
     private static BuyManager buyManager;
-    private final MiniMessage miniMessage;   // MiniMessage Parser
+    private static final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final String serverName;
 
     public SwaparooPlugin() {
         instance = this;
-        this.miniMessage = MiniMessage.miniMessage();
         this.serverName = findServerName();
     }
 
@@ -102,16 +103,20 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
     }
 
     public static void logMsg(String msg) {
-        instance.getLogger().info("[Swaparoo] " + msg);
+        Component cmsg = MiniMessage.miniMessage().deserialize(msg);
+        instance.getLogger().info("[Swaparoo] " + LegacyComponentSerializer.legacySection().serialize(cmsg));
     }
 
     public static void errMsg(String msg) {
-        instance.getLogger().severe("[Swaparoo] " + msg);
+        Component cmsg = MiniMessage.miniMessage().deserialize(msg);
+        instance.getLogger().severe("[Swaparoo] " + LegacyComponentSerializer.legacySection().serialize(cmsg));
     }
 
     public static void debugMsg(String msg) {
-        if (config.getDebug())
-            instance.getLogger().info("[Swaproo] DEBUG: " + msg);
+        if (config.getDebug()) {
+            Component cmsg = MiniMessage.miniMessage().deserialize(msg);
+            instance.getLogger().info("[Swaparoo] DEBUG: " + LegacyComponentSerializer.legacySection().serialize(cmsg));
+        }
     }
 
     public static boolean isDebug() {

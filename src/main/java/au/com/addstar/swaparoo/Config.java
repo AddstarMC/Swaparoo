@@ -7,6 +7,7 @@ import java.io.File;
 public class Config {
     private static File confFile;
     private static Boolean debugEnabled = false;
+    private static Boolean dustEnabled = false;
     private static YamlConfiguration config;
 
     public Config(SwaparooPlugin plugin) {
@@ -23,9 +24,18 @@ public class Config {
         reload();
     }
 
+    public Boolean isDustEnabled() {
+        return dustEnabled;
+    }
+
+    public void setDustEnabled(Boolean dustEnabled) {
+        Config.dustEnabled = dustEnabled;
+    }
+
     public void reload() {
         config = YamlConfiguration.loadConfiguration(confFile);
         debugEnabled = config.getBoolean("debug", false);
+        dustEnabled = config.getBoolean("dust-enabled", false);
     }
 
     public Boolean getDebug() {

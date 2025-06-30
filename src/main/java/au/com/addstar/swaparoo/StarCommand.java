@@ -19,10 +19,11 @@ public class StarCommand implements CommandExecutor {
             Player player = (Player) sender;
             Integer gems = plugin.getDM().getStarCount(player.getUniqueId(), "stargems", false);
             Integer dust = plugin.getDM().getStarCount(player.getUniqueId(), "stardust", true);
-            plugin.sendMsg(sender, "<light_purple>═════════════════════════</light_purple>");
-            plugin.sendMsg(sender, "<light_purple>►► <green>You have <aqua>" + gems + " <yellow>Star<gold>Gems</gold></yellow>");
-            plugin.sendMsg(sender, "<light_purple>►► <green>You have <aqua>" + dust + " <yellow>Star<white>Dust</white></yellow>");
-            plugin.sendMsg(sender, "<light_purple>═════════════════════════</light_purple>");
+            plugin.sendMsg(sender, "<gradient:#8A2BE2:#00FFFF>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
+            plugin.sendMsg(sender, "<light_purple><bold>   ►►</bold></light_purple> <green>You have</green> <aqua>" + gems + " <yellow>Star<gold>Gems</gold></yellow> <yellow>★</yellow>");
+            if (SwaparooPlugin.getConfigs().isDustEnabled())
+                plugin.sendMsg(sender, "<light_purple><bold>   ►►</bold></light_purple> <green>You have</green> <aqua>" + dust + " <yellow>Star<white>Dust</white></yellow> <gray>✦</gray>");
+            plugin.sendMsg(sender, "<gradient:#8A2BE2:#00FFFF>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
             return true;
         }
         else if ((args.length > 0) && (sender.hasPermission("swaparoo.command.balance.other"))) {

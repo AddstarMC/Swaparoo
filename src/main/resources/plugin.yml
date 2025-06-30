@@ -10,10 +10,10 @@ commands:
     usage: "/swaparoo"
     permission: swaparoo.admin
   stargems:
-    description: "Check your StarGems/StarDust balance"
+    description: "Check your StarGem balance"
     usage: "/stargems"
     permission: swaparoo.command.balance
-    aliases: [stardust, gems, dust]
+    aliases: [gems]
   buyconfirm:
     description: "Confirm a purchase with StarGems"
     usage: "/buyconfirm"

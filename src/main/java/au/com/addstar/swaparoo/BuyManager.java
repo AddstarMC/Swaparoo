@@ -50,21 +50,25 @@ public class BuyManager {
         plugin.getServer().getScheduler().runTaskTimer(plugin, this::removeExpiredPurchases, 100, 100);
     }
 
-    public void buyPackage(Player buyer, int cost, String packagename, String params) {
-        StoredPurchase storedCommand = new StoredPurchase(buyer.getName(), cost, packagename, params);
+    public void buyPackage(Player buyer, int cost, String packageid, String packagename, String params) {
+        StoredPurchase storedCommand = new StoredPurchase(buyer.getName(), cost, packageid, params);
         pendingPurchases.put(buyer.getUniqueId(), storedCommand);
 
         SwaparooPlugin.debugMsg("=== Command to have been purchased ===");
         SwaparooPlugin.debugMsg("Player " + buyer.getName());
         SwaparooPlugin.debugMsg("Gem cost: " + cost);
-        SwaparooPlugin.debugMsg("Package name: '" + packagename + "'");
+        SwaparooPlugin.debugMsg("Package ID: '" + packageid + "'");
+        SwaparooPlugin.debugMsg("Package Name: '" + packagename + "'");
+        SwaparooPlugin.debugMsg("Package Params: " + params);
 
         String link = "<hover:show_text:\"<green>√</green> <yellow>Click to purchase</yellow>\"><click:run_command:/buyconfirm><bold><light_purple>►►<gold><underlined>CLICK HERE</underlined></gold>◄◄</light_purple></bold></click></hover>";
-        plugin.sendMsg(buyer, "<red>═════════════════════════════════</red>");
-        plugin.sendMsg(buyer, "<green> Purchase Item: <aqua>" + packagename.replaceAll("_", " ") + "</aqua></green>");
-        plugin.sendMsg(buyer, "<green> Purchase Cost: <aqua>" + cost + " <yellow>Star<gold>Gems</aqua></green>");
-        plugin.sendMsg(buyer, "<newline><green> " + link + " <yellow>to confirm your purchase.</green>");
-        plugin.sendMsg(buyer, "<red>═════════════════════════════════</red>");
+        plugin.sendMsg(buyer, "<gradient:#ffbb00:#ff0f1f>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
+        plugin.sendMsg(buyer, "<yellow>  You are about to purchase a package:</yellow>");
+        plugin.sendMsg(buyer, "<green>     Package ID: <aqua>" + packageid + "</aqua></green>");
+        plugin.sendMsg(buyer, "<green>     Package Name: <aqua>" + packagename + "</aqua></green>");
+        plugin.sendMsg(buyer, "<green>     Purchase Cost: <aqua>" + cost + " <yellow>Star<gold>Gems</aqua></green><newline>");
+        plugin.sendMsg(buyer, "<green>   " + link + " <yellow>to confirm your purchase.</green>");
+        plugin.sendMsg(buyer, "<gradient:#ffbb00:#ff0f1f>★━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━★</gradient>");
         return;
     }
 
