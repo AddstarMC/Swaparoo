@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -32,8 +33,8 @@ public class DataManager {
         }
     }
 
-    public java.util.List<Transaction> getTransactions(UUID playerid, int offset, int limit) {
-        java.util.List<Transaction> list = new ArrayList<>();
+    public List<Transaction> getTransactions(UUID playerid, int offset, int limit) {
+        List<Transaction> list = new ArrayList<>();
         String query = "SELECT action, stargems, stardust, package_id, package_name, transaction_time " +
                 "FROM transactions WHERE player_uuid=? ORDER BY transaction_time DESC LIMIT ? OFFSET ?";
         try (Connection conn = starGemsDB.getConnection();

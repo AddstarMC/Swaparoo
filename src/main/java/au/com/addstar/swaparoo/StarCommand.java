@@ -39,30 +39,51 @@ public class StarCommand implements CommandExecutor {
             int offset = (page - 1) * 10;
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
                 var list = plugin.getDM().getTransactions(player.getUniqueId(), offset, 10);
-                if (list.isEmpty()) {
-                    plugin.sendMsg(player, "<yellow>No transactions found.</yellow>");
-                    return;
-                }
-                java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm");
-                for (var t : list) {
-                    StringBuilder msg = new StringBuilder();
-                    msg.append("- ").append(t.time().toLocalDateTime().format(fmt)).append(" - ");
-                    String action = t.action();
-                    if (action.equalsIgnoreCase("add")) {
-                        if (t.stargems() > 0) msg.append("Received ").append(t.stargems()).append(" StarGems");
-                        if (t.stardust() > 0) msg.append("Received ").append(t.stardust()).append(" StarDust");
-                    } else if (action.equalsIgnoreCase("remove")) {
-                        if (t.stargems() > 0) msg.append("Spent ").append(t.stargems()).append(" StarGems");
-                        if (t.stardust() > 0) msg.append("Spent ").append(t.stardust()).append(" StarDust");
-                    } else if (action.equalsIgnoreCase("set")) {
-                        if (t.stargems() > 0) msg.append("Balance set to ").append(t.stargems()).append(" StarGems");
-                        if (t.stardust() > 0) msg.append("Balance set to ").append(t.stardust()).append(" StarDust");
-                    } else if (action.equalsIgnoreCase("buy")) {
-                        msg.append("Spent ").append(t.stargems()).append(" StarGems");
-                        if (t.packageName() != null) msg.append(": ").append(t.packageName()).append(" (").append(t.packageId()).append(")");
+                plugin.getServer().getScheduler().runTask(plugin, () -> {
+                    if (list.isEmpty()) {
+                        plugin.sendMsg(player, "<yellow>No transactions found.</yellow>");
+                        return;
                     }
-                    plugin.sendMsg(player, msg.toString());
-                }
+                    java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm");
+                    for (var t : list) {
+                        String date = t.time().toLocalDateTime().format(fmt);
+                        StringBuilder msg = new StringBuilder("<gray>- " + date + " - </gray>");
+                        String action = t.action();
+                        if (action.equalsIgnoreCase("add")) {
+                            if (t.stargems() > 0) msg.append("<green>Received <aqua>").append(t.stargems())
+                                    .append("</aqua> <yellow>Star<gold>Gems</gold></yellow>");
+                            if (t.stardust() > 0) {
+                                if (t.stargems() > 0) msg.append(", ");
+                                msg.append("<green>Received <aqua>").append(t.stardust())
+                                    .append("</aqua> <yellow>Star<white>Dust</white></yellow>");
+                            }
+                        } else if (action.equalsIgnoreCase("remove")) {
+                            if (t.stargems() > 0) msg.append("<red>Spent <aqua>").append(t.stargems())
+                                    .append("</aqua> <yellow>Star<gold>Gems</gold></yellow>");
+                            if (t.stardust() > 0) {
+                                if (t.stargems() > 0) msg.append(", ");
+                                msg.append("<red>Spent <aqua>").append(t.stardust())
+                                    .append("</aqua> <yellow>Star<white>Dust</white></yellow>");
+                            }
+                        } else if (action.equalsIgnoreCase("set")) {
+                            if (t.stargems() > 0) msg.append("<yellow>Balance set to <aqua>").append(t.stargems())
+                                    .append("</aqua> <yellow>Star<gold>Gems</gold></yellow>");
+                            if (t.stardust() > 0) {
+                                if (t.stargems() > 0) msg.append(", ");
+                                msg.append("<yellow>Balance set to <aqua>").append(t.stardust())
+                                    .append("</aqua> <yellow>Star<white>Dust</white></yellow>");
+                            }
+                        } else if (action.equalsIgnoreCase("buy")) {
+                            msg.append("<red>Spent <aqua>").append(t.stargems())
+                                    .append("</aqua> <yellow>Star<gold>Gems</gold></yellow>");
+                            if (t.packageName() != null) {
+                                msg.append(": <white>").append(t.packageName())
+                                        .append("</white> (<gray>").append(t.packageId()).append("</gray>)");
+                            }
+                        }
+                        plugin.sendMsg(player, msg.toString());
+                    }
+                });
             });
             return true;
         }
