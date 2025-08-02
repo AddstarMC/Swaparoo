@@ -149,7 +149,7 @@ public class SwaparooCommand implements CommandExecutor, TabCompleter {
                         case "set" -> {
                             // Set the stardust for the player
                             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-                                plugin.getSM().setStars(player.getUniqueId(), startype, amount, true);
+                                plugin.getSM().setStars(player.getUniqueId(), startype, amount, 0,true);
                                 if (startype.equals("stargems")) {
                                     plugin.getDM().recordTransaction(player.getUniqueId(), "set", amount, 0, null, null);
                                 } else {
