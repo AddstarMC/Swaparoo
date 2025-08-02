@@ -6,10 +6,12 @@ Swaparoo is a Minecraft plugin that implements and manages two new currencies ca
 
 The plugin integrates with PlaceholderAPI to provide the following placeholders:
 
+- `%swaparoo_server%` - Displays the server name (auto-detected on boot, no config needed).
 - `%swaparoo_stargems%` - Displays the number of StarGems a player has.
 - `%swaparoo_stardust%` - Displays the number of StarDust a player has.
-- `%swaparoo_gemcost_XX%` - Displays the formatted StarGems cost (with price "XX").
-- `%swaparoo_server%` - Displays the server name (auto-detected on boot, no config needed).
+- `%swaparoo_gemcost_<cost>%` - Displays the formatted stargems cost the item. Replace `<cost>` with the item cost.
+- `%swaparoo_msg_<server>_<cost>%` - Displays the formatted message for a specific server and cost. Replace `<server>` with the required server name and `<cost>` with the item cost.
+- `%swaparoo_keys_<keyname>%` - Displays the number of keys a player has for a specific key type. Replace `<keyname>` with the name of the key.
 
 ## Commands
 
