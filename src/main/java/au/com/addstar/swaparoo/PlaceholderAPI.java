@@ -57,6 +57,35 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         else if (params.equalsIgnoreCase("server")) {
             return plugin.getServerName();
         }
+        else if (params.startsWith("msg_")) {
+            // Placeholder: msg_<server>_<cost>
+            // Extract server name and stargems cost from name
+            String[] parts = params.split("_");
+            if (parts.length != 3) {
+                return "INVALID_FORMAT";
+            }
+
+            // Validate the player is on the correct server
+            String requiredServer = parts[1];
+            if (!requiredServer.equalsIgnoreCase(plugin.getServerName())) {
+                // Return the message indicating the required server
+                return "You must be in " + requiredServer + " server to purchase";
+            }
+
+            // Validate the player has enough stargems
+            String costStr = parts[2];
+            int cost;
+            try {
+                cost = Integer.parseInt(costStr);
+                int playerGems = plugin.getDM().getStarCount(player.getUniqueId(), "stargems", true);
+                if (playerGems < cost) {
+                    return "Sorry, you only have " + playerGems + " StarGems";
+                }
+            } catch (NumberFormatException e) {
+                return "INVALID_COST";
+            }
+            return "OK";
+        }
         else if (params.startsWith("gemcost_") && params.length() > 8) {
             String val = params.substring(8);
             try {
