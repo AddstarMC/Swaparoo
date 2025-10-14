@@ -99,8 +99,9 @@ public class BuyManager {
         String packId = storedCommand.getPackageId();
         String packName = storedCommand.getPackageName();
         String params = storedCommand.getParams();
-        if (plugin.getSM().takeStars(buyer.getUniqueId(), "stargems", cost, false)) {
-            String cmd = "runalias srv_starshop " + buyer.getName() + " " + packId + " " + cost + " " + params;
+        int newBalance = plugin.getSM().takeStars(buyer.getUniqueId(), "stargems", cost, false);
+        if (newBalance >= 0) {
+            String cmd = "runalias srv_starshop " + buyer.getName() + " " + packId + " " + cost + " " + newBalance + " " + params;
             SwaparooPlugin.debugMsg("Executing command: " + cmd);
             plugin.getServer().dispatchCommand(plugin.getServer().getConsoleSender(), cmd);
             plugin.getDM().recordTransaction(buyer.getUniqueId(), "buy", cost, 0, packId, packName);

@@ -125,7 +125,7 @@ public class SwaparooCommand implements CommandExecutor, TabCompleter {
                         case "add" -> {
                             // Add stardust to the player
                             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-                                plugin.getSM().giveStars(player.getUniqueId(), startype, amount, true);
+                                int newBalance = plugin.getSM().giveStars(player.getUniqueId(), startype, amount, true);
                                 if (startype.equals("stargems")) {
                                     plugin.getDM().recordTransaction(player.getUniqueId(), "add", amount, 0, null, null);
                                 } else {
@@ -137,7 +137,7 @@ public class SwaparooCommand implements CommandExecutor, TabCompleter {
                         case "remove" -> {
                             // Remove stardust from the player
                             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-                                plugin.getSM().takeStars(player.getUniqueId(), startype, amount, true);
+                                int newBalance = plugin.getSM().takeStars(player.getUniqueId(), startype, amount, true);
                                 if (startype.equals("stargems")) {
                                     plugin.getDM().recordTransaction(player.getUniqueId(), "remove", amount, 0, null, null);
                                 } else {

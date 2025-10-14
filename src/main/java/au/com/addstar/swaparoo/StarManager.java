@@ -13,22 +13,22 @@ public class StarManager {
         dataManager = plugin.getDM();
     }
 
-    public boolean giveStars(UUID playerid, String type, int amount, boolean notifyPlayer) {
-        Integer balance = dataManager.getStarCount(playerid, type, false);
-        if (balance == null) {
-            return false;
+    public int giveStars(UUID playerid, String type, int amount, boolean notifyPlayer) {
+        Integer newBalance = dataManager.getStarCount(playerid, type, false);
+        if (newBalance == null) {
+            return -1;
         }
-        setStars(playerid, type, balance + amount, amount, notifyPlayer);
-        return true;
+        setStars(playerid, type, newBalance + amount, amount, notifyPlayer);
+        return (newBalance + amount);
     }
 
-    public boolean takeStars(UUID playerid, String type, int amount, boolean notifyPlayer) {
-        Integer balance = dataManager.getStarCount(playerid, type, false);
-        if (balance == null || balance < amount) {
-            return false;
+    public int takeStars(UUID playerid, String type, int amount, boolean notifyPlayer) {
+        Integer newBalance = dataManager.getStarCount(playerid, type, false);
+        if (newBalance == null || newBalance < amount) {
+            return -1;
         }
-        setStars(playerid, type, balance - amount, (-amount), notifyPlayer);
-        return true;
+        setStars(playerid, type, newBalance - amount, (-amount), notifyPlayer);
+        return (newBalance - amount);
     }
 
     public boolean setStars(UUID playerid, String type, int newBalance, int change, boolean notifyPlayer) {
