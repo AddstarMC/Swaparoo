@@ -153,6 +153,31 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         }
     }
 
+    /**
+     * Enhanced message validation placeholder evaluator.
+     * Usage syntax:
+     *   %swaparoo_msg:<token>[:<token>...]%
+     * Tokens are processed left-to-right; the first failing token stops evaluation and its
+     * user-friendly message (or error code) is returned. All pass => "OK".
+     * Supported tokens:
+     *   cost=<n>            Require player has >= n stargems.
+     *   server=<name>       Require current server name matches <name> (case-insensitive).
+     *   inv=<n>             Require >= n free inventory slots (online player only).
+     *   creativeplots<<n>   Require creativeplots limit < n (permissions creativeplots.<value>, 0..50).
+     *   creativeplots><n>   Require creativeplots limit > n.
+     *   homes<<n>           Require homes limit < n (permissions gesuit.homes.limits.<value>, 0..100 step 5).
+     *   vaults<<n>          Require vaults limit < n (permissions playervaults.amount.<value>, 0..10).
+     *   cparkour<<n>        Require community parkour plots limit < n (permissions creativeparkour.create.<value>, 0..20).
+     *
+     * Behavior notes:
+     *   - Empty spec => INVALID_FORMAT
+     *   - Unknown token => INVALID_KEY
+     *   - Malformed / negative numbers => appropriate INVALID_* code
+     *   - Offline player for inventory / permission tokens => PLAYER_OFFLINE
+     *   - Result is cached per (player,spec) for 1s by onRequest()
+     * Example:
+     *   %swaparoo_msg:cost=100:server=survival:inv=3:creativeplots<10%
+     */
     private String evaluateMsgSpec(final OfflinePlayer player, final String spec) {
         if (spec.isEmpty()) {
             return "INVALID_FORMAT";
