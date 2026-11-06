@@ -15,6 +15,7 @@ public class DataManager {
     private final SwaparooPlugin plugin;
     private final StarGemsDB starGemsDB;
     private final TreasuresDB treasuresDB;
+    private final UnscrambleDB unscrambleDB;
     private final PlayerKVCacheManager keyCacheManager = new PlayerKVCacheManager(750, TimeUnit.MILLISECONDS);
     private final PlayerKVCacheManager starCacheManager = new PlayerKVCacheManager(750, TimeUnit.MILLISECONDS);
     private final String[] treasureKeys = {"stone", "iron", "gold", "diamond", "emerald"};
@@ -22,6 +23,10 @@ public class DataManager {
 
     public record Transaction(String action, int stargems, int stardust, String packageId,
                               String packageName, Timestamp time) {}
+
+    public record ConversionTier(int level, int minTotalPoints, int pointsPerGem) {}
+
+    public record UnscramblePlayer(int points, int totalPoints, int wins) {}
 
     public void recordTransaction(UUID playerid, String action, int gems, int dust, String packageId, String packageName) {
         String query = "INSERT INTO transactions (player_uuid, action, stargems, stardust, package_id, package_name) VALUES (?,?,?,?,?,?)";
@@ -59,17 +64,20 @@ public class DataManager {
         this.plugin = plugin;
         starGemsDB = new StarGemsDB(plugin);
         treasuresDB = new TreasuresDB(plugin);
+        unscrambleDB = new UnscrambleDB(plugin);
     }
 
     public void initialise() throws SQLException {
         // Initialise the database connection pools
         starGemsDB.initializePool();
         treasuresDB.initializePool();
+        unscrambleDB.initializePool();
     }
 
     public void close() {
         starGemsDB.closePool();
         treasuresDB.closePool();
+        unscrambleDB.closePool();
     }
 
     // Clear the cache for a player
@@ -202,6 +210,91 @@ public class DataManager {
         } catch (SQLException e) {
             SwaparooPlugin.errMsg("StarGemsDB: Failed to get " + startype + " count for player " + playerid + ": " + e.getMessage());
             SwaparooPlugin.errMsg("Query: " + query);
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Atomically adds to the StarGems/StarDust balance for a player.
+     *
+     * @param playerid UUID of the player
+     * @param startype the balance to add to
+     * @param amount the amount to add
+     * @return true if the balance was updated
+     */
+    public boolean addStarCount(UUID playerid, String startype, int amount) {
+        String query = "INSERT INTO players (PLAYER_UUID, " + startype + ") VALUES (?, ?) "
+                + "ON DUPLICATE KEY UPDATE " + startype + "=" + startype + "+?";
+        try {
+            starGemsDB.executeUpdate(query, playerid.toString(), amount, amount);
+            return true;
+        } catch (SQLException e) {
+            SwaparooPlugin.errMsg("StarGemsDB: Failed to add " + amount + " " + startype + " for player " + playerid + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Get the conversion tiers published by Unscramble, lowest threshold first.
+     *
+     * @return the tiers (empty when conversion is off), or null if they couldn't be read
+     */
+    public List<ConversionTier> getConversionTiers() {
+        List<ConversionTier> tiers = new ArrayList<>();
+        String query = "SELECT level, min_total_points, points_per_gem FROM conversion_tiers ORDER BY min_total_points";
+        try (Connection conn = unscrambleDB.getConnection();
+             ResultSet result = unscrambleDB.executeQuery(conn, query)) {
+            while (result.next()) {
+                tiers.add(new ConversionTier(
+                        result.getInt("level"),
+                        result.getInt("min_total_points"),
+                        result.getInt("points_per_gem")));
+            }
+            return tiers;
+        } catch (SQLException e) {
+            SwaparooPlugin.errMsg("UnscrambleDB: Failed to fetch conversion tiers: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Get the Unscramble stats for a player.
+     *
+     * @param playerid UUID of the player
+     * @return the stats (all zero if the player has no record), or null if they couldn't be read
+     */
+    public UnscramblePlayer getUnscramblePlayer(UUID playerid) {
+        String query = "SELECT points, totalpoints, wins FROM players WHERE playerid=? LIMIT 1";
+        try (Connection conn = unscrambleDB.getConnection();
+             ResultSet result = unscrambleDB.executeQuery(conn, query, playerid.toString())) {
+            if (result.next()) {
+                return new UnscramblePlayer(result.getInt("points"), result.getInt("totalpoints"), result.getInt("wins"));
+            }
+            return new UnscramblePlayer(0, 0, 0);
+        } catch (SQLException e) {
+            SwaparooPlugin.errMsg("UnscrambleDB: Failed to fetch stats for player " + playerid + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Set a player's Unscramble points, but only if the balance hasn't changed.
+     *
+     * @param playerid UUID of the player
+     * @param expected the balance the player must still have
+     * @param newPoints the new balance
+     * @return true if the balance was updated
+     */
+    public boolean setUnscramblePoints(UUID playerid, int expected, int newPoints) {
+        String query = "UPDATE players SET points = ? WHERE playerid = ? AND points = ?";
+        try {
+            return unscrambleDB.executeUpdate(query, newPoints, playerid.toString(), expected) > 0;
+        } catch (SQLException e) {
+            SwaparooPlugin.errMsg("UnscrambleDB: Failed to set points for player " + playerid + ": " + e.getMessage());
             e.printStackTrace();
         }
         return false;

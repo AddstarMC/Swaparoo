@@ -79,6 +79,12 @@ public class StarCommand implements CommandExecutor {
                             if (t.packageName() != null) {
                                 msg.append(": <white>").append(t.packageName()).append("</white>");
                             }
+                        } else if (action.equalsIgnoreCase("convert")) {
+                            msg.append("<green>Received <aqua>").append(t.stargems())
+                                    .append("</aqua> <yellow>Star<gold>Gems</gold></yellow>");
+                            if (t.packageName() != null) {
+                                msg.append(" <green>from <white>").append(t.packageName()).append("</white>");
+                            }
                         }
                         plugin.sendMsg(player, msg.toString());
                     }

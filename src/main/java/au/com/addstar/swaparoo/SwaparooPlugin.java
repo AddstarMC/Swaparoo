@@ -19,6 +19,7 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
     private static DataManager dataManager;
     private static StarManager starManager;
     private static BuyManager buyManager;
+    private static ConvertManager convertManager;
     private static final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final String serverName;
 
@@ -64,7 +65,9 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
 
         starManager = new StarManager(this);
         buyManager = new BuyManager(this);
+        convertManager = new ConvertManager(this);
         Bukkit.getPluginManager().registerEvents(new PlayerListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new ConvertListener(this), this);
         SwaparooCommand swaparooCommand = new SwaparooCommand(this);
         getCommand("swaparoo").setExecutor(swaparooCommand);
         getCommand("swaparoo").setTabCompleter(swaparooCommand);
@@ -73,6 +76,8 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
         getCommand("stargems").setAliases(Arrays.asList("gems", "dust", "stardust"));
 
         getCommand("buyconfirm").setExecutor(new ConfirmCommand(this));
+
+        getCommand("usconvert").setExecutor(new ConvertCommand(this));
     }
 
     @Override
@@ -96,6 +101,10 @@ public final class SwaparooPlugin extends JavaPlugin implements Listener {
 
     public BuyManager getBM() {
         return buyManager;
+    }
+
+    public ConvertManager getCM() {
+        return convertManager;
     }
 
     public static Config getConfigs() {

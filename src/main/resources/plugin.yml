@@ -18,7 +18,14 @@ commands:
     description: "Confirm a purchase with StarGems"
     usage: "/buyconfirm"
     permission: swaparoo.command.confirm
+  usconvert:
+    description: "Convert Unscramble points to StarGems"
+    usage: "/usconvert"
+    permission: swaparoo.command.usconvert
 permissions:
+  swaparoo.command.usconvert:
+    description: "Allows converting Unscramble points to StarGems"
+    default: true
   swaparoo.admin:
     description: "Allows access to Swaparoo commands"
     default: op

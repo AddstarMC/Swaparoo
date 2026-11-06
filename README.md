@@ -51,6 +51,7 @@ Error codes:
 - `/stargems <player>` - Displays another player's balance of StarGems and StarDust (requires permission).
 - `/swaparoo buy <player> <gems> <packagename> <params>` - Purchase a package for a player (normally only used by console).
 - `/buyconfirm` - Confirm the purchase of an item (used in clickable messages).
+- `/usconvert` - Opens the GUI for converting Unscramble points to StarGems.
 
 ## Permissions
 
@@ -61,6 +62,7 @@ Error codes:
 - `swaparoo.command.balance` - Allows the use of the `/stargems` command to view the player's balance.
 - `swaparoo.command.balance.other` - Allows the use of the `/stargems <player>` command to view another player's balance.
 - `swaparoo.command.buyconfirm` - Allows the use of the `/buyconfirm` command.
+- `swaparoo.command.usconvert` - Allows the use of the `/usconvert` command. Granted to all players by default.
 
 ## Integrations
 
@@ -71,6 +73,23 @@ Swaparoo integrates with the Treasures plugin to manage in-game reward keys. The
 ### StarGems/StarDust
 
 Swaparoo implements two custom currencies: StarGems and StarDust. The database configuration for these currencies is handled through the `stargemsdb.properties` file.
+
+### Unscramble
+
+Players can convert Unscramble points to StarGems with `/usconvert`. The database connection is configured in `unscrambledb.properties`, which must point at the Unscramble database on every server running Swaparoo, because Swaparoo won't enable if it can't connect. The database user needs `SELECT` on `conversion_tiers` and `players`, and `UPDATE` on `players`.
+
+Unscramble owns the tiers and publishes them to `conversion_tiers`. Swaparoo reads them when the GUI opens and again on confirm, so an Unscramble reload takes effect without restarting Swaparoo. An empty table turns conversion off, and players are told conversion is unavailable if the table or database can't be read.
+
+How a conversion works:
+
+- A player's level and rate come from their lifetime points (`totalpoints`). Players below Level 1 can't convert.
+- Converting needs a balance of at least 100 `points`, and always converts as much of the balance as possible. Gems are `FLOOR(points / points_per_gem)`, and the remainder stays in the balance. `totalpoints` is never changed.
+- The convert button opens a confirmation menu with Confirm and Cancel buttons. Cancel goes back to the main menu, and closing the menu converts nothing.
+- If the balance changes during the final write, no gems are given and the main menu reopens with the new balance.
+- Points are taken before gems are given, because they are in separate databases. If giving the gems fails, the server log has an error with the player, points taken, gems owed and old balance, so the gems can be given manually.
+- Each conversion is recorded as a `convert` transaction and appears in `/stargems history`.
+
+The GUI shows up to 20 levels. If Unscramble publishes more, a warning is logged and players above Level 20 still convert at their real rate.
 
 ## Configuration
 
